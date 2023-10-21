@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Import axios
+import axios from "axios";
 import {
   Input,
   Button,
@@ -24,7 +24,7 @@ const DataList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 15;
   const API_URL = "https://api.thedogapi.com";
   useEffect(() => {
     axios
@@ -44,30 +44,27 @@ const DataList = () => {
   }, []);
 
   useEffect(() => {
-    // Apply filtering logic based on all filter fields.
-    // Set the filtered data in the 'filteredData' state.
     const filtered = data.filter((item) => {
       const nameMatches =
         item.name && item.name.toLowerCase().includes(nameFilter.toLowerCase());
+      const firstTemperament =
+        item.temperament && item.temperament.split(",")[0].toLowerCase();
       const secondFilterMatches =
-        ((item.temperament &&
-          item.temperament
+        (firstTemperament &&
+          firstTemperament.includes(temperamentFilter.toLowerCase())) ||
+        (item.breed_group &&
+          item.breed_group
             .toLowerCase()
-            .includes(temperamentFilter.toLowerCase())) ||
-          (item.breed_group &&
-            item.breed_group
-              .toLowerCase()
-              .includes(breedGroupFilter.toLowerCase())) ||
-          (item.life_span &&
-            item.life_span
-              .toLowerCase()
-              .includes(lifeSpanFilter.toLowerCase()))) &&
-        (!secondFilter || item.secondFilterField === secondFilter);
+            .includes(breedGroupFilter.toLowerCase())) ||
+        (item.life_span &&
+          item.life_span.toLowerCase().includes(lifeSpanFilter.toLowerCase()));
+      // &&
+      // (!secondFilter || item.secondFilterField === secondFilter);
 
       return nameMatches && secondFilterMatches;
     });
     setFilteredData(filtered);
-    setCurrentPage(1); // Reset to the first page when filters change.
+    setCurrentPage(1);
   }, [
     nameFilter,
     secondFilter,
@@ -90,7 +87,7 @@ const DataList = () => {
 
   return (
     <div>
-      {loading ? ( // Display loading overlay if loading is true
+      {loading ? (
         <Box
           position="fixed"
           top="0"
@@ -105,59 +102,69 @@ const DataList = () => {
           <Spinner size="xl" />
         </Box>
       ) : null}
-      <Flex flexDirection={{ base: "column", md: "row" }}>
-        <Input
-          placeholder="Filter by name"
-          value={nameFilter}
-          onChange={(e) => setNameFilter(e.target.value)}
-          mb={2}
-          mr={{ md: 2 }}
-        />
-        <Select
-          placeholder="Filter by Field"
-          value={secondFilter}
-          onChange={(e) => setSecondFilter(e.target.value)}
-          mb={2}
-          mr={{ md: 2 }}
+      <Box position="sticky" top="0" zIndex="sticky" backgroundColor="white">
+        <Flex
+          flexDirection={{ base: "column", md: "row" }}
+          justifyContent="space-between"
+          alignItems="center"
+          p={4}
         >
-          <option value="temperament">Temperament</option>
-          <option value="breed_group">Breed Group</option>
-          <option value="life_span">Life Span</option>
-        </Select>
-        <Input
-          placeholder="Filter by Temperament"
-          value={temperamentFilter}
-          onChange={(e) => setTemperamentFilter(e.target.value)}
-          mb={2}
-          mr={{ md: 2 }}
-        />
-        <Input
-          placeholder="Filter by Breed Group"
-          value={breedGroupFilter}
-          onChange={(e) => setBreedGroupFilter(e.target.value)}
-          mb={2}
-          mr={{ md: 2 }}
-        />
-        <Input
-          placeholder="Filter by Life Span"
-          value={lifeSpanFilter}
-          onChange={(e) => setLifeSpanFilter(e.target.value)}
-          mb={2}
-        />
-        <Link to="/web3">
-          <Button mb={2} ml={{ base: 0, md: 2 }}>
-            Explore Web3
-          </Button>
-        </Link>
-      </Flex>
-      <Flex flexWrap="wrap">
-        {visibleData &&
-          visibleData.map((item, index) => (
-            <WrapItem key={index}>
-              <DataCard data={item} />
-            </WrapItem>
-          ))}
-      </Flex>
+          <Flex>
+            <Input
+              placeholder="Filter by name"
+              value={nameFilter}
+              onChange={(e) => setNameFilter(e.target.value)}
+              mb={2}
+              mr={{ md: 2 }}
+            />
+            <Select
+              placeholder="Filter by Field"
+              value={secondFilter}
+              onChange={(e) => setSecondFilter(e.target.value)}
+              mb={2}
+              mr={{ md: 2 }}
+            >
+              <option value="temperament">Temperament</option>
+              <option value="breed_group">Breed Group</option>
+              <option value="life_span">Life Span</option>
+            </Select>
+            <Input
+              placeholder="Filter by Breed Group"
+              value={breedGroupFilter}
+              onChange={(e) => setBreedGroupFilter(e.target.value)}
+              mb={2}
+              mr={{ md: 2 }}
+            />
+          </Flex>
+          <Link to="/web3">
+            <Button mb={2} ml={{ base: 0, md: 2 }}>
+              Explore Web3
+            </Button>
+          </Link>
+        </Flex>
+      </Box>
+      <Box
+        width="90%"
+        height="80vh"
+        marginX="auto"
+        marginTop="4" // Add margin top to separate it from the navigation
+        padding="4" // Add padding for spacing
+        overflowY="auto" // Enable vertical scrolling if needed
+        // background="red"
+      >
+        <Flex
+          flexWrap="wrap"
+          justifyContent="center" // Center the cards horizontally
+          gap="4" // Add gap between cards
+        >
+          {visibleData &&
+            visibleData.map((item, index) => (
+              <WrapItem key={index}>
+                <DataCard data={item} />
+              </WrapItem>
+            ))}
+        </Flex>
+      </Box>
       <Flex justifyContent="center" mt={4}>
         <Button
           onClick={() => handlePageChange(currentPage - 1)}

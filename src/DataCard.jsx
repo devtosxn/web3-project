@@ -8,10 +8,8 @@ const DataCard = ({ data }) => {
       borderRadius="lg"
       p={4}
       m={2}
-      width="350px"
-      height="570px" // Set a consistent height for the card
-      // maxW="400px" // Set a max width for the card
-      // minH="300px" // Set a min height for the card
+      width="250px"
+      height="auto"
       boxShadow="md"
       display="flex"
       flexDirection="column"
@@ -19,10 +17,11 @@ const DataCard = ({ data }) => {
       <Image
         src={`https://cdn2.thedogapi.com/images/${data.reference_image_id}.jpg`}
         alt={data.name}
-        flex="1" // Stretch the image to fit the dimensions
+        width="90%"
+        height="150px"
         objectFit="cover"
       />
-      <Text fontSize="xl" fontWeight="bold" mt={2}>
+      <Text fontSize="l" fontWeight="bold" mt={2}>
         {data.name}
       </Text>
       <Text fontSize="sm" fontWeight="semibold" mt={2}>
@@ -41,7 +40,7 @@ const DataCard = ({ data }) => {
         <Text as="span" color="teal.500">
           Temperament:
         </Text>{" "}
-        {data.temperament}
+        {data.temperament.split(",")[0]}
       </Text>
     </Box>
   );
